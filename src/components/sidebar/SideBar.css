@@ -1,0 +1,44 @@
+.side-stack{
+
+    align-items: center;
+    width: 10vw;
+    height: calc(100vh - 120px);
+    justify-content: space-evenly;
+    margin-top: -20px;
+    position: fixed;
+    top: 140px;
+    background-color: #f4f3f2;
+    float: left;
+    clear: none;
+}
+
+.stack-item{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    text-align: center;
+
+    align-content: center;
+
+}
+
+.stack-item:hover{
+    cursor: pointer;
+    background-color: #949494;
+}
+
+.selected-stack-item{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    text-align: center;
+
+    align-content: center;
+    background-color: #333333;
+    color: #f4f3f2;
+}
+
+.selected-stack-item:hover{
+    cursor: pointer;
+    
+}

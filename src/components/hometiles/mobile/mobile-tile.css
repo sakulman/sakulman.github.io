@@ -1,0 +1,27 @@
+.home-row{
+    min-height: 200px;
+}
+
+.image{
+    max-width: 100%;
+ 
+}
+
+.descriptor-text{
+    display: flex;
+    flex-direction: row;
+    
+    justify-content: space-between;
+    height: 100%;
+}
+
+.text-title{
+    line-height: 10px;
+    min-height: 100%;
+    align-content: center;
+}
+
+.mobile-text-desc{
+    max-width: 100%;
+    /* margin-top: 0; */
+}

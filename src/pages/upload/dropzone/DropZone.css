@@ -1,0 +1,36 @@
+.selected-image{
+
+    width: 200px;
+    z-index: 1;
+}
+
+.pick-image{
+    cursor: pointer;
+    width: fit-content;
+}
+
+.image-area{
+    display: flex;
+    margin-top: 20px;
+    width: fit-content;
+    position: relative;
+}
+
+.cancel-image{
+    color: white;
+    background-color: red;
+    border-radius: 20px;
+    font-size: 20px;
+    /* position: sticky; */
+    top: -10px;
+    right: -10px;
+    height: fit-content;
+    width: fit-content;
+    z-index: 20;
+    position: absolute;
+}
+
+.cancel-image:hover{
+    color: red;
+    background-color: white;
+}

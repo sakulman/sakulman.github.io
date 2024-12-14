@@ -1,0 +1,63 @@
+.reorder-card-image{
+    
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    position: absolute;
+}
+
+.reorder-card{
+    height: 120px;
+    width: 100%;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background-color: #f9fbfc;
+    border-radius: 20px;
+    border: 2px solid #b3b3b3;
+}
+
+.reorder-drag-icon{
+    cursor: grab;
+    font-size: 40px;
+}
+
+.reorder-card-text{
+    width: 150px;
+    align-self: center;
+}
+
+.reorder-edit-icon{
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 30px;
+    display: flex;
+    justify-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    height: 60px;
+    align-self: center;
+}
+
+.reorder-edit-icon:hover{
+    cursor: pointer;
+    background-color: #e9e9e9;
+}
+
+.reorder-divider{
+    height: calc(100% - 40px);
+    align-self: center;
+    margin: 0;
+}
+
+.reorder-delete:hover{
+    color: rgb(224, 2, 2);
+}
+
+.reorder-drag{
+    align-self: center;
+    display: flex;
+    justify-content: end;
+}

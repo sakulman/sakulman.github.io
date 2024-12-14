@@ -1,0 +1,28 @@
+.home-row{
+    
+    min-height: 200px;
+}
+
+.medium-image{
+    max-width: 100%;
+ 
+}
+
+.medium-descriptor-text{
+    display: flex;
+    flex-direction: column;
+    justify-items: end;
+    /* align-items: end; */
+    justify-content: end;
+    min-height: 100%;
+}
+
+.text-title{
+    /* line-height: 6px; */
+}
+
+.clickable-title:hover{
+    color: grey;
+    cursor: pointer;
+    text-decoration: underline;
+}

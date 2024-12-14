@@ -1,0 +1,31 @@
+.section {
+    position: relative;
+    height: 300vh;
+    background-color: #f4f3f2; 
+    /* background-color: blue; */
+    top: 120;
+    z-index: 0;
+
+  }
+  
+  .container {
+    position: sticky;
+    top: 200px;
+    display: flex;
+    align-items: center;
+    height: 70vh; /* h-screen */
+    overflow: hidden;
+    /* background-color: blueviolet; */
+  }
+  
+  .motion-div {
+    display: flex;
+    gap: 3rem; /* gap-4 */
+    
+    /* background-color: aqua; */
+  }
+
+
+  .section::-webkit-scrollbar {
+    display: none; /* Hides scrollbar in WebKit browsers */
+}

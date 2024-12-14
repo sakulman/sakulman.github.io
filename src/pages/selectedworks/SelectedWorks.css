@@ -1,0 +1,39 @@
+
+
+.selected-works-body{
+    height: calc(100vh - 140px);
+    background-color: #f4f3f2;
+    padding-top: 140px;
+}
+
+.sw-title{
+    justify-items: center;
+    top: 100px;
+    position: fixed;
+}
+
+.sw-left-panel{
+    height: 100px;
+    width: 100%;
+}
+
+.inner-container{
+    max-height: 70vh;
+    position: sticky;
+    margin-left: -2px;
+}
+
+.horizontal-scroll{
+    height: 60vh;
+    margin-left: 2px;
+
+}
+
+::-webkit-scrollbar {
+    display: none; /* Hides scrollbar in WebKit browsers */
+}
+
+.square-tile-spacer{
+    height: 100%;
+    width: 50px;
+}

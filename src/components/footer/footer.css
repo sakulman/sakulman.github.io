@@ -1,0 +1,40 @@
+.footer{
+    height: 140px;
+    background-color: #E5E5E5;
+    padding-top: 0;
+}
+
+.spacer{
+    height: 40px;
+    width: 100%;
+    
+}
+
+.icon-circle{
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    color: hsl(205, 11%, 22%); /* LinkedIn Blue */
+    border: 2px solid hsl(205, 11%, 22%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.icon-circle:hover{
+    cursor: pointer;
+    color: #E5E5E5;
+    background-color: hsl(205, 11%, 22%);
+}
+
+.social-icons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    min-width: 100%;
+}
+
+.footer-grid{
+
+}

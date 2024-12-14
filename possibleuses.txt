@@ -1,0 +1,15 @@
+SFX
+https://magicui.design/docs/components/magic-card
+https://magicui.design/docs/components/particles
+https://magicui.design/docs/components/blur-fade
+https://magicui.design/docs/components/text-reveal
+https://magicui.design/docs/components/word-rotate
+https://magicui.design/docs/components/typing-animation
+https://www.framer.com/motion/use-scroll/
+
+structure
+https://magicui.design/docs/components/marquee
+
+components
+https://ant.design/components/carousel
+https://mui.com/material-ui/react-backdrop/

@@ -1,0 +1,57 @@
+.reorder-group {
+    list-style-type: none; /* Remove bullet points */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+
+}
+
+.editor-page{
+    background-color: #f4f3f2;
+    height: 100vh;
+}
+
+.reorder-area{
+    margin-top: 30px;
+    border: 2px solid #7e7e7e;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-radius: 30px;
+    background-color: #eeeeee;
+}
+
+.add-new-reorder{
+    height: 116px;
+    width: 100%;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background-color: #eff1f1;
+    border-radius: 20px;
+    border: 2px dashed #b3b3b3;
+    font-size: 40px;
+    color: #686868;
+    display: flex;
+    justify-items: center;
+    justify-content: center;
+}
+
+.add-new-reorder:hover{
+    cursor: pointer;
+    background-color: #f9fbfc;
+    color: #494949;
+    border-color: #8a8a8a;
+}
+
+.save-tile-order-button{
+    margin-top: 20px;
+    align-self: flex-end;
+    margin-right: 30px;
+}
+
+.editor-main-grid{}
+
+.save-tile-order{
+    display: flex;
+    width: 100%;
+    justify-content: end;
+}
