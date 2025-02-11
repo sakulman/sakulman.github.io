@@ -12,6 +12,8 @@ import { addDoc, collection, doc, getDoc, getDocs, updateDoc } from "@firebase/f
 import { v4 } from "uuid";
 import { HomeTileType } from '../../enums/HomeTileType.ts';
 import { create } from '@mui/material/styles/createTransitions';
+import '../../services/cloud.ts';
+import { uploadImage } from '../../services/cloud.ts';
 
 
 const { TextArea } = AntInput;
@@ -63,10 +65,13 @@ function Upload() {
             console.log("image is null");
             return;
         }
-        const imageRef = ref(storage, `images/${v4() + HomeTileFormRef.image.name}`);
-        const snapshot = await uploadBytes(imageRef, HomeTileFormRef.image);
-        const url = await getDownloadURL(snapshot.ref);
-        HomeTileFormRef.imageUrl = url;
+        console.log("in submit form");
+        let newUrl: string | null = await uploadImage(HomeTileFormRef);
+        if (newUrl == null) {
+            console.log("url is null");
+            return;
+        }
+        HomeTileFormRef.imageUrl = newUrl;
 
         try {
             HomeTileFormRef.position = await getNewPosition();

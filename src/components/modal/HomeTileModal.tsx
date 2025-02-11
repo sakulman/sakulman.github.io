@@ -9,6 +9,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { addDoc, collection, doc, getDoc, getDocs, updateDoc } from "@firebase/firestore";
 import { v4 } from "uuid";
 import { HomeTileType } from '../../enums/HomeTileType.ts';
+import { uploadImage } from '../../services/cloud.ts';
 
 interface ModalComponentProps {
   isModalOpen: boolean;
@@ -100,6 +101,7 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
 
 
   const submitForm = async () => {
+    
     setLoadings(true);
     if (formState == null) {
       setLoadings(false);
@@ -122,6 +124,7 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
       setLoadings(false);
       return;
     }
+    console.log("here1");
     if (tileId != null) {
       console.log(changedDescription)
       try {
@@ -141,11 +144,12 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
             setLoadings(false);
             return;
           }
-          const newName: string = v4() + formState.image.name;
-          const imageRef = ref(storage, `images/${newName}`);
-          const snapshot = await uploadBytes(imageRef, formState.image);
-          const url = await getDownloadURL(snapshot.ref);
-          formState.imageUrl = url;
+          let newUrl: string | null = await uploadImage(HomeTileFormRef);
+        if (newUrl == null) {
+            console.log("url is null");
+            return;
+        }
+          formState.imageUrl = newUrl;
           await updateDoc(docRef, { imageUrl: formState.imageUrl });
         }
 
@@ -168,11 +172,13 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
         setErrorMessage("No image selected");
         return;
       }
-      const newName: string = v4() + formState.image.name;
-      const imageRef = ref(storage, `images/${newName}`);
-      const snapshot = await uploadBytes(imageRef, formState.image);
-      const url = await getDownloadURL(snapshot.ref);
-      formState.imageUrl = url;
+      console.log("here2");
+      let newUrl: string | null = await uploadImage(HomeTileFormRef);
+        if (newUrl == null) {
+            console.log("url is null");
+            return;
+        }
+          formState.imageUrl = newUrl;
 
       try {
         formState.position = await getNewPosition();

@@ -2,6 +2,7 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "@firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 import { getStorage } from "firebase/storage";
+import { getFunctions } from "firebase/functions";
 
 
 
@@ -20,5 +21,5 @@ const analytics = getAnalytics(app);
 
 export const firestore = getFirestore(app);
 export const storage = getStorage(app);
-
+export const functions = getFunctions(app);
   
