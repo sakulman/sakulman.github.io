@@ -9,12 +9,12 @@ import { httpsCallable } from 'firebase/functions';
 
 const HomeTilesRef = collection(firestore, "HomeTiles");
 
-export const uploadImage = async (form: HomeTileForm): Promise<string | null> => { 
+export const uploadImage = async (image: File,form: HomeTileForm): Promise<string | null> => { 
     console.log("submitting form");
         if (form == null) {
             return "";
         }
-        if (form.image == null) {
+        if (image == null) {
             console.log("image is null");
             return null;
     }
@@ -24,7 +24,11 @@ export const uploadImage = async (form: HomeTileForm): Promise<string | null> =>
     // const url = await getDownloadURL(snapshot.ref);
     const uploadImageCloudCall = httpsCallable(functions, 'uploadImage');
     try {
-        const result = await uploadImageCloudCall();
+        const result = await uploadImageCloudCall(
+            {
+                
+            }
+        );
         console.log(result);
     } catch (e) {   
         console.error(e);

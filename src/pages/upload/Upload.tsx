@@ -66,7 +66,7 @@ function Upload() {
             return;
         }
         console.log("in submit form");
-        let newUrl: string | null = await uploadImage(HomeTileFormRef);
+        let newUrl: string | null = await uploadImage(HomeTileFormRef.image, HomeTileFormRef);
         if (newUrl == null) {
             console.log("url is null");
             return;

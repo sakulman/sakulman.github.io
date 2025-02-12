@@ -10,6 +10,6 @@ const firebase_key = process.env.FIREBASE_API_KEY;
 initializeApp();
 
 export const uploadImage = functions.https.onCall((request: any, response: any) => {
-    console.log(firebase_key!);
+    
     return;
 });

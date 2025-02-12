@@ -144,7 +144,7 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
             setLoadings(false);
             return;
           }
-          let newUrl: string | null = await uploadImage(HomeTileFormRef);
+          let newUrl: string | null = await uploadImage(formState.image, HomeTileFormRef);
         if (newUrl == null) {
             console.log("url is null");
             return;
@@ -173,12 +173,16 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
         return;
       }
       console.log("here2");
-      let newUrl: string | null = await uploadImage(HomeTileFormRef);
-        if (newUrl == null) {
-            console.log("url is null");
-            return;
-        }
-          formState.imageUrl = newUrl;
+      const imageRef = ref(storage, `images/${v4() + formState.image.name}`);
+    const snapshot = await uploadBytes(imageRef, formState.image);
+    const url = await getDownloadURL(snapshot.ref);
+      // for google cloud
+      // let newUrl: string | null = await uploadImage(formState.image, HomeTileFormRef);
+      //   if (newUrl == null) {
+      //       console.log("url is null");
+      //       return;
+      //   }
+          formState.imageUrl = url;
 
       try {
         formState.position = await getNewPosition();
