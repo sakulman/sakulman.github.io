@@ -6,3 +6,7 @@
     justify-content: end;
     min-height: 100%;
 }
+
+.square-text-desc p {
+    white-space: pre-wrap; 
+}

@@ -31,9 +31,7 @@ function HorizontalScroll() {
     const spacerview: Hash = useSelector((state: RootState) => state.scroll.spacer);
     const recent: number = useSelector((state: RootState) => state.scroll.recent);
     const clicked: number = useSelector((state: RootState) => state.scroll.clicked);
-    // console.log("clicked = " + clicked.toString());
-    // console.log("recent = " + recent);
-    // console.log(spacerview);
+
     if (clicked > 0) {
         
         startScroll(clicked);

@@ -24,3 +24,7 @@
 .text-desc{
     max-width: 60%;
 }
+
+.text-desc p {
+    white-space: pre-wrap; 
+}

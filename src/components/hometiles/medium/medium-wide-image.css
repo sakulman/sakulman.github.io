@@ -26,3 +26,7 @@
     cursor: pointer;
     text-decoration: underline;
 }
+
+.medium-text-desc p {
+    white-space: pre-wrap; 
+}

@@ -1,0 +1,13 @@
+.project-title{
+    justify-content: center;
+    display: flex;
+    
+}
+
+.project-title-text{
+}
+
+.project-page-main{
+    max-width: 80%;
+    margin: auto;
+}

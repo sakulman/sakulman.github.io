@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './Modal.css';
-import { Input as AntInput, Space, Select, Button, Modal, message, Popconfirm } from 'antd';
+import { Input as AntInput, Space, Select, Button, Modal, message, Popconfirm, Form } from 'antd';
 import { useState, useRef, useEffect } from 'react';
 import DropZone from '../../pages/upload/dropzone/DropZone.tsx';
 import { HomeTileForm } from '../../types/HomeTileForm.ts';
@@ -10,6 +10,8 @@ import { addDoc, collection, doc, getDoc, getDocs, updateDoc } from "@firebase/f
 import { v4 } from "uuid";
 import { HomeTileType } from '../../enums/HomeTileType.ts';
 import { uploadImage } from '../../services/cloud.ts';
+import { TextField } from '@mui/material';
+import PhotoUpload from './PhotoUpload.tsx';
 
 interface ModalComponentProps {
   isModalOpen: boolean;
@@ -28,7 +30,7 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
 
   const positionData = useRef<Positions[]>([]);
 
-  
+
 
   const [loadings, setLoadings] = useState<boolean>(false);
 
@@ -40,6 +42,7 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
       setErrorMessage(null); // Reset the error message after displaying it
     }
   }, [errorMessage]);
+
 
   const [titleInputStatus, setTitleInputStatus] = useState<boolean>(false);
   const [yearInputStatus, setYearInputStatus] = useState<boolean>(false);
@@ -101,7 +104,7 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
 
 
   const submitForm = async () => {
-    
+
     setLoadings(true);
     if (formState == null) {
       setLoadings(false);
@@ -126,7 +129,7 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
     }
     console.log("here1");
     if (tileId != null) {
-      console.log(changedDescription)
+      console.log(formState.description)
       try {
         const docRef = doc(firestore, "HomeTiles", tileId);
         if (changedTitle) {
@@ -145,10 +148,10 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
             return;
           }
           let newUrl: string | null = await uploadImage(formState.image, HomeTileFormRef);
-        if (newUrl == null) {
+          if (newUrl == null) {
             console.log("url is null");
             return;
-        }
+          }
           formState.imageUrl = newUrl;
           await updateDoc(docRef, { imageUrl: formState.imageUrl });
         }
@@ -174,19 +177,19 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
       }
       console.log("here2");
       const imageRef = ref(storage, `images/${v4() + formState.image.name}`);
-    const snapshot = await uploadBytes(imageRef, formState.image);
-    const url = await getDownloadURL(snapshot.ref);
+      const snapshot = await uploadBytes(imageRef, formState.image);
+      const url = await getDownloadURL(snapshot.ref);
       // for google cloud
       // let newUrl: string | null = await uploadImage(formState.image, HomeTileFormRef);
       //   if (newUrl == null) {
       //       console.log("url is null");
       //       return;
       //   }
-          formState.imageUrl = url;
+      formState.imageUrl = url;
 
       try {
         formState.position = await getNewPosition();
-        console.log(formState);
+        console.log(formState.description);
         const created = await addDoc(HomeTilesRef, JSON.parse(JSON.stringify(formState)));
       } catch (e) {
         setLoadings(false);
@@ -263,11 +266,48 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
         {tileId ? <h2>Edit Home Page Feature</h2> : <h2>Add Home Page Feature</h2>}
 
         <Space className='input-container' direction='vertical' size={10}>
-          <AntInput {... (titleInputStatus ? { status: "error" } : {})} value={formState.title} onChange={(e) => handleFormChange(e, "title")} className='single-inputs' placeholder="Title" />
+          {/* <Form.Item label="Title">
+            <AntInput {... (titleInputStatus ? { status: "error" } : {})} value={formState.title} onChange={(e) => handleFormChange(e, "title")} className='single-inputs' placeholder="Title" />
 
-          <AntInput {... (yearInputStatus ? { status: "error" } : {})} value={formState.year} onChange={(e) => handleFormChange(e, "year")} className='single-inputs' placeholder="Year" />
+          </Form.Item>
 
-          <TextArea {... (descriptionInputStatus ? { status: "error" } : {})} value={formState.description} onChange={(e) => handleFormChange(e, "description")} placeholder='Short Description'></TextArea>
+          <Form.Item label="Year">
+            <AntInput {... (yearInputStatus ? { status: "error" } : {})} value={formState.year} onChange={(e) => handleFormChange(e, "year")} className='single-inputs' placeholder="Year" />
+
+          </Form.Item>
+          <Form.Item label="Description">
+            <TextArea {... (descriptionInputStatus ? { status: "error" } : {})} value={formState.description} onChange={(e) => handleFormChange(e, "description")} placeholder='Short Description'></TextArea>
+
+          </Form.Item> */}
+          <TextField
+            label="Title"
+            error={titleInputStatus}
+            value={formState.title}
+            onChange={(e) => handleFormChange(e, "title")}
+            className='single-inputs'
+            placeholder="Title"
+            fullWidth
+          />
+          <TextField
+            label="Year"
+            error={yearInputStatus}
+            value={formState.year}
+            onChange={(e) => handleFormChange(e, "year")}
+            className='single-inputs'
+            placeholder="Year"
+            fullWidth
+          />
+          <TextField
+            label="Description"
+            error={descriptionInputStatus}
+            value={formState.description}
+            onChange={(e) => handleFormChange(e, "description")}
+            className='single-inputs'
+            placeholder="Short Description"
+            multiline
+            rows={4}
+            fullWidth
+          />
           <Select
             defaultValue="medium"
             style={{ width: 120 }}
@@ -281,6 +321,7 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
           />
         </Space>
         <DropZone sendImage={getImageFromDrop}></DropZone>
+        <PhotoUpload></PhotoUpload>
       </div>
     </Modal>
   );

@@ -21,7 +21,7 @@ function MediumWideImage(form: MediumWideImageProps) {
                         </h1> 
                         <p className='clickable-title'>{form.data.year}</p>
                 </Box>
-                <Box className='medium-text-desc'>
+                    <Box className='medium-text-desc'>
                         <p>{form.data.description}</p>
                 </Box>
                 </Box>

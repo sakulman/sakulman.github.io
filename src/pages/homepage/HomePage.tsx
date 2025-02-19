@@ -11,6 +11,7 @@ import { firestore, storage } from "../../firebase/firebase.tsx";
 import { collection, getDocs } from 'firebase/firestore';
 import { HomeTileType } from '../../enums/HomeTileType.ts';
 import { HomeTileForm } from '../../types/HomeTileForm.ts';
+import UserList from '../../components/test/test.js';
 
 function HomePage() {
 
@@ -45,14 +46,14 @@ function HomePage() {
 
 
         <Box className='body'>
+            {/* <UserList /> */}
 
             {
                 !isMobile && (
                     <div>
                         {tiles.map(tile => {
-                            console.log(tile.imageUrl);
                             return (
-                                <div key={tile.title}>
+                                <div key={tile.description}>
                                     {tile.format === HomeTileType.Medium && <MediumWideImage data={tile} />}
                                     {tile.format === HomeTileType.Wide && <UltraWideImage data={tile} />}
                                     {tile.format === HomeTileType.Square && <SquareImage data={tile} />}
@@ -66,19 +67,30 @@ function HomePage() {
                 )
             }
 
-            {/* {
+            {
                 isMobile && (
                     <div>
-                        <MobileTile />
+                        {tiles.map(tile => {
+                            console.log(tile.imageUrl);
+                            return (
+                                <div key={tile.description}>
+                                    <MediumWideImage data={tile} />
+                                    
+                                    <Box className='mobile-home-spacer'></Box>
+                                </div>
+                                
+                            );
+                        })}
+                        {/* <MobileTile data/>
                         <Box className='mobile-home-spacer'></Box>
                         <MobileTile />
                         <Box className='mobile-home-spacer'></Box>
                         <MobileTile />
-                        <Box className='mobile-home-spacer'></Box>
+                        <Box className='mobile-home-spacer'></Box> */}
                     </div>
 
                 )
-            } */}
+            }
 
 
             <Footer></Footer>
