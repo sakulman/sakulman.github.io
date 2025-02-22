@@ -4,14 +4,19 @@ import { Input as AntInput, Space, Select, Button, Modal, message, Popconfirm, F
 import { useState, useRef, useEffect } from 'react';
 import DropZone from '../../pages/upload/dropzone/DropZone.tsx';
 import { HomeTileForm } from '../../types/HomeTileForm.ts';
-import { firestore, storage } from "../../firebase/firebase.tsx";
+import { firestore, storage, uploadImage, writeProjectPhotos } from "../../firebase/firebase.tsx";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { addDoc, collection, doc, getDoc, getDocs, updateDoc } from "@firebase/firestore";
 import { v4 } from "uuid";
 import { HomeTileType } from '../../enums/HomeTileType.ts';
-import { uploadImage } from '../../services/cloud.ts';
 import { TextField } from '@mui/material';
 import PhotoUpload from './PhotoUpload.tsx';
+import ProjectPhotos from './ProjectPhotos.tsx';
+import { Tabs } from 'antd';
+import HomeTileTab from './HomeTileTab.tsx';
+
+
+type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
 interface ModalComponentProps {
   isModalOpen: boolean;
@@ -28,7 +33,67 @@ interface Positions {
 
 const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCancel, handleOk, tileId, reRender }: ModalComponentProps) => {
 
+
+  const initialItems = [
+    { label: 'Tab 1', children: <HomeTileTab tileId={tileId} isModalOpen={isModalOpen} />, key: '1' },
+    { label: 'Tab 2', children: 'Content of Tab 2', key: '2' },
+    {
+      label: 'Tab 3',
+      children: 'Content of Tab 3',
+      key: '3',
+      closable: false,
+    },
+  ];
+
+  const add = () => {
+    const newActiveKey = `newTab${newTabIndex.current++}`;
+    const newPanes = [...items];
+    newPanes.push({ label: 'New Tab', children: 'Content of new Tab', key: newActiveKey });
+    setItems(newPanes);
+    setActiveKey(newActiveKey);
+  };
+
+  const remove = (targetKey: TargetKey) => {
+    let newActiveKey = activeKey;
+    let lastIndex = -1;
+    items.forEach((item, i) => {
+      if (item.key === targetKey) {
+        lastIndex = i - 1;
+      }
+    });
+    const newPanes = items.filter((item) => item.key !== targetKey);
+    if (newPanes.length && newActiveKey === targetKey) {
+      if (lastIndex >= 0) {
+        newActiveKey = newPanes[lastIndex].key;
+      } else {
+        newActiveKey = newPanes[0].key;
+      }
+    }
+    setItems(newPanes);
+    setActiveKey(newActiveKey);
+  };
+
+  const onEdit = (
+    targetKey: React.MouseEvent | React.KeyboardEvent | string,
+    action: 'add' | 'remove',
+  ) => {
+    if (action === 'add') {
+      add();
+    } else {
+      remove(targetKey);
+    }
+  };
+
+  const [activeKey, setActiveKey] = useState(initialItems[0].key);
+  const [items, setItems] = useState(initialItems);
+  const newTabIndex = useRef(0);
+
+  const onChange = (newActiveKey: string) => {
+    setActiveKey(newActiveKey);
+  };
+
   const positionData = useRef<Positions[]>([]);
+  const projectImages = useRef<string[]>([]);
 
 
 
@@ -42,6 +107,7 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
       setErrorMessage(null); // Reset the error message after displaying it
     }
   }, [errorMessage]);
+
 
 
   const [titleInputStatus, setTitleInputStatus] = useState<boolean>(false);
@@ -127,7 +193,6 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
       setLoadings(false);
       return;
     }
-    console.log("here1");
     if (tileId != null) {
       console.log(formState.description)
       try {
@@ -141,19 +206,13 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
         if (changedDescription) {
           await updateDoc(docRef, { description: formState.description });
         }
+        await writeProjectPhotos(tileId, projectImages.current);
         if (changedImageUrl) {
           if (formState.image == null) {
             setErrorMessage("No image selected");
             setLoadings(false);
             return;
           }
-          let newUrl: string | null = await uploadImage(formState.image, HomeTileFormRef);
-          if (newUrl == null) {
-            console.log("url is null");
-            return;
-          }
-          formState.imageUrl = newUrl;
-          await updateDoc(docRef, { imageUrl: formState.imageUrl });
         }
 
       }
@@ -176,9 +235,10 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
         return;
       }
       console.log("here2");
+
       const imageRef = ref(storage, `images/${v4() + formState.image.name}`);
       const snapshot = await uploadBytes(imageRef, formState.image);
-      const url = await getDownloadURL(snapshot.ref);
+      const url = await uploadImage(formState.image, formState.image.name);
       // for google cloud
       // let newUrl: string | null = await uploadImage(formState.image, HomeTileFormRef);
       //   if (newUrl == null) {
@@ -244,6 +304,15 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
     return;
 
   };
+
+
+  const handleProjectPhotos = (photos: string[]) => {
+    // console.log(projectImages.current);
+    projectImages.current = [...photos];
+    console.log(projectImages.current);
+    // console.log(projectImages.current); 
+  };
+
   return (
     <Modal open={isModalOpen} closable={false} footer={[
       <Popconfirm
@@ -262,23 +331,19 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
       </Button>
 
     ]}>
-      <div>
+
+      <Tabs
+        type="editable-card"
+        onChange={onChange}
+        activeKey={activeKey}
+        onEdit={onEdit}
+        items={items}
+      />
+      {/* <div>
         {tileId ? <h2>Edit Home Page Feature</h2> : <h2>Add Home Page Feature</h2>}
 
         <Space className='input-container' direction='vertical' size={10}>
-          {/* <Form.Item label="Title">
-            <AntInput {... (titleInputStatus ? { status: "error" } : {})} value={formState.title} onChange={(e) => handleFormChange(e, "title")} className='single-inputs' placeholder="Title" />
 
-          </Form.Item>
-
-          <Form.Item label="Year">
-            <AntInput {... (yearInputStatus ? { status: "error" } : {})} value={formState.year} onChange={(e) => handleFormChange(e, "year")} className='single-inputs' placeholder="Year" />
-
-          </Form.Item>
-          <Form.Item label="Description">
-            <TextArea {... (descriptionInputStatus ? { status: "error" } : {})} value={formState.description} onChange={(e) => handleFormChange(e, "description")} placeholder='Short Description'></TextArea>
-
-          </Form.Item> */}
           <TextField
             label="Title"
             error={titleInputStatus}
@@ -321,8 +386,9 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
           />
         </Space>
         <DropZone sendImage={getImageFromDrop}></DropZone>
-        <PhotoUpload></PhotoUpload>
-      </div>
+        <PhotoUpload projectId={tileId!} updated={handleProjectPhotos}></PhotoUpload>
+        <ProjectPhotos projectId={tileId!} updated={handleProjectPhotos}></ProjectPhotos>
+      </div> */}
     </Modal>
   );
 }

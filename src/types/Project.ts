@@ -1,5 +1,15 @@
-export class Project{
-    url: string;
+import { HomeTileType } from "../enums/HomeTileType";
+
+export interface ModalTab{
     title: string;
-    id: string;
+    
 }
+
+export interface HomeTileForm extends ModalTab{
+    year: string;
+    description: string;
+    format: HomeTileType;
+    image: File | undefined;
+    imageUrl: string;
+    homeTileOrder: number | undefined;
+ };

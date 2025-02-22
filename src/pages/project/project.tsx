@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Project } from '../../types/Project.ts';
 import { Box, Grid2 as Grid, ImageList, ImageListItem } from '@mui/material';
 import { Tabs, Image, Space } from 'antd';
 import {
@@ -16,10 +15,13 @@ import {
 } from '@ant-design/icons';
 import "./project.css";
 import ProjectOverview from '../../components/projects/project-overview.tsx';
+import { getProjectPhotos } from '../../firebase/firebase.tsx';
+import { v4 } from 'uuid';
 
 
 const ProjectPage: React.FC<{ projectId: string }> = ({ projectId }) => {
 
+    
 
 
     const itemData = [
@@ -36,6 +38,24 @@ const ProjectPage: React.FC<{ projectId: string }> = ({ projectId }) => {
         'https://images.unsplash.com/photo-1597262975002-c5c3b14bbd62',
         'https://images.unsplash.com/photo-1519710164239-da123dc03ef4',
     ];
+
+    const [projectPhotos, setProjectPhotos] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchProjectPhotos = async () =>{
+            let urls: string[] = await getProjectPhotos(projectId);
+            let newFileList = urls.map((url) => {
+              return {
+                uid: v4(),
+                name: url,
+                status: 'done',
+                url: url,
+                thumbUrl: url,
+              } 
+            });
+            setProjectPhotos(urls);
+          };
+    }, []);
 
     const [current, setCurrent] = useState(0);
 
