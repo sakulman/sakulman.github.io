@@ -6,13 +6,15 @@ import type { GetProp, UploadFile, UploadProps } from 'antd';
 import { Reorder } from 'framer-motion';
 import { v4 } from 'uuid';
 import { getProjectPhotos, uploadImage } from '../../firebase/firebase.tsx';
+import { ModalFormTab } from '../../types/ModalFormTab.ts';
 
 interface PhotoUploadProps {
   projectId: string;
   updated: (files: string[]) => void;
+  key: string;
 }
 
-const PhotoUpload: React.FC<PhotoUploadProps> = ({projectId, updated}) => {
+const PhotoUpload: React.FC<PhotoUploadProps> = ({projectId, updated, key}) => {
 
   const [fileList, setFileList] = useState<UploadFile[]>([
     // {

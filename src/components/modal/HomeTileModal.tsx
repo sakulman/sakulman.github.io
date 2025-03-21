@@ -14,7 +14,10 @@ import PhotoUpload from './PhotoUpload.tsx';
 import ProjectPhotos from './ProjectPhotos.tsx';
 import { Tabs } from 'antd';
 import HomeTileTab from './HomeTileTab.tsx';
+import { ModalFormTab } from '../../types/ModalFormTab.ts';
 
+// add: individual submit for each tab, looks the same for all of them
+// when exiting a tab, save
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -33,22 +36,34 @@ interface Positions {
 
 const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCancel, handleOk, tileId, reRender }: ModalComponentProps) => {
 
+  const [allForms, setAllForms] = useState<ModalFormTab[]>([]);
+
+  const updateForms = (newForm: ModalFormTab, key: String) => {
+    let formElement: ModalFormTab | undefined = allForms.find(form => form.key === key);
+
+    if (formElement) {
+      setAllForms(prevForms =>
+        prevForms.map(form => (form.key === key ? newForm : form))
+      );
+    }
+    
+
+  };
+  
+  const addNewForm = () => {
+
+  };
 
   const initialItems = [
-    { label: 'Tab 1', children: <HomeTileTab tileId={tileId} isModalOpen={isModalOpen} />, key: '1' },
-    { label: 'Tab 2', children: 'Content of Tab 2', key: '2' },
-    {
-      label: 'Tab 3',
-      children: 'Content of Tab 3',
-      key: '3',
-      closable: false,
-    },
+    { label: 'Tab 1', children: <HomeTileTab tileId={tileId} isModalOpen={isModalOpen} updated={updateForms} />, key: '0', closable: false },
+    { label: 'Tab 2', children: <PhotoUpload projectId={tileId!} updated={reRender} key='1' />, key: '1' },
+    
   ];
 
   const add = () => {
     const newActiveKey = `newTab${newTabIndex.current++}`;
     const newPanes = [...items];
-    newPanes.push({ label: 'New Tab', children: 'Content of new Tab', key: newActiveKey });
+    newPanes.push({ label: 'New Tab', children: <></>, key: newActiveKey });
     setItems(newPanes);
     setActiveKey(newActiveKey);
   };
@@ -326,9 +341,9 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
           Cancel
         </Button>
       </Popconfirm>,
-      <Button key="submit" type="primary" loading={loadings} onClick={submitForm}>
-        Submit
-      </Button>
+      // <Button key="submit" type="primary" loading={loadings} onClick={submitForm}>
+      //   Submit
+      // </Button>
 
     ]}>
 
@@ -338,57 +353,9 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
         activeKey={activeKey}
         onEdit={onEdit}
         items={items}
+        
       />
-      {/* <div>
-        {tileId ? <h2>Edit Home Page Feature</h2> : <h2>Add Home Page Feature</h2>}
-
-        <Space className='input-container' direction='vertical' size={10}>
-
-          <TextField
-            label="Title"
-            error={titleInputStatus}
-            value={formState.title}
-            onChange={(e) => handleFormChange(e, "title")}
-            className='single-inputs'
-            placeholder="Title"
-            fullWidth
-          />
-          <TextField
-            label="Year"
-            error={yearInputStatus}
-            value={formState.year}
-            onChange={(e) => handleFormChange(e, "year")}
-            className='single-inputs'
-            placeholder="Year"
-            fullWidth
-          />
-          <TextField
-            label="Description"
-            error={descriptionInputStatus}
-            value={formState.description}
-            onChange={(e) => handleFormChange(e, "description")}
-            className='single-inputs'
-            placeholder="Short Description"
-            multiline
-            rows={4}
-            fullWidth
-          />
-          <Select
-            defaultValue="medium"
-            style={{ width: 120 }}
-            onChange={handleSelectChange}
-            options={[
-              { value: 'tall', label: 'tall' },
-              { value: 'square', label: 'square' },
-              { value: 'medium', label: 'wide' },
-              { value: 'wide', label: 'ultra-wide' },
-            ]}
-          />
-        </Space>
-        <DropZone sendImage={getImageFromDrop}></DropZone>
-        <PhotoUpload projectId={tileId!} updated={handleProjectPhotos}></PhotoUpload>
-        <ProjectPhotos projectId={tileId!} updated={handleProjectPhotos}></ProjectPhotos>
-      </div> */}
+     
     </Modal>
   );
 }

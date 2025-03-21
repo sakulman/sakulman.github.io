@@ -7,16 +7,15 @@ import { HomeTileForm } from '../../types/HomeTileForm.ts';
 import { firestore, storage, uploadImage, writeProjectPhotos } from "../../firebase/firebase.tsx";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { addDoc, collection, doc, getDoc, getDocs, updateDoc } from "@firebase/firestore";
-import { v4 } from "uuid";
 import { HomeTileType } from '../../enums/HomeTileType.ts';
-import { Image, TextField } from 'antd';
 import { SubmitHandler, useForm } from 'react-hook-form'
-import type { GetProp, UploadFile, UploadProps } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { TextField } from '@mui/material';
+import { ModalFormTab } from '../../types/ModalFormTab.ts';
 
 interface HomeTileTabProps {
     tileId: string | null;
     isModalOpen: boolean;
+    updated: (newForm: ModalFormTab, key: String) => void;
 };
 
 
@@ -24,77 +23,18 @@ interface Positions {
     [key: number]: string;
 };
 
-type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
-const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, }: HomeTileTabProps) => {
+const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, updated,  }: HomeTileTabProps) => {
 
-    const { register } = useForm<HomeTileForm>();
-
-    const [fileList, setFileList] = useState<UploadFile[]>([]);
-
-    const handleFileChange = async (event) => {
-        console.log("handle file change");
-        const files: File[] = Array.from(event.target.files);
-        let newFileList: UploadFile[] = await Promise.all(files.map(async (file) => {
-            try {
-                let newUrl: string = await uploadImage(file, file.name);
-                return {
-                    uid: v4(),
-                    name: file.name,
-                    status: 'done',
-                    url: newUrl,
-                    thumbUrl: newUrl,
-                } as UploadFile;
-            }
-            catch (e) {
-                console.error(e);
-                return {
-                    uid: v4(),
-                    name: file.name,
-                    status: 'error',
-                } as UploadFile;
-            }
-
-        }));
-        setFileList((prevFileList) => [...newFileList]);
-    };
-
-    const getBase64 = (file: FileType): Promise<string> =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = (error) => reject(error);
-        });
-
-    const uploadButton = (
-        <button style={{ border: 0, background: 'none' }} type="button">
-            <PlusOutlined />
-            <div style={{ marginTop: 8 }}>Upload</div>
-        </button>
-    );
-
-
-    const [titleInputStatus, setTitleInputStatus] = useState<boolean>(false);
-    const [yearInputStatus, setYearInputStatus] = useState<boolean>(false);
-    const [descriptionInputStatus, setDescriptionInputStatus] = useState<boolean>(false);
-
-    const [changedTitle, setChangedTitle] = useState<boolean>(false);
-    const [changedYear, setChangedYear] = useState<boolean>(false);
-    const [changedDescription, setChangedDescription] = useState<boolean>(false);
-    const [changedImageUrl, setChangedImageUrl] = useState<boolean>(false);
-
-
-    let HomeTileFormRef = new HomeTileForm();
-    HomeTileFormRef.format = HomeTileType.Medium;
-    const [formState, setFormState] = useState({ ...HomeTileFormRef });
+    const { register, setValue, handleSubmit } = useForm<HomeTileForm>();
 
     const HomeTilesRef = collection(firestore, "HomeTiles");
 
-
-    const getImageFromDrop = (image: File) => {
-        setFormState(prevState => ({ ...prevState, image: image }));
-        setChangedImageUrl(true);
+    const getImageFromDrop = async (image: File) => {
+        // setFormState(prevState => ({ ...prevState, image: image }));
+        // setChangedImageUrl(true);
+        let newFileUrl: string = await uploadImage(image, image.name);
+        setValue('imageUrl', newFileUrl);
     };
 
 
@@ -106,14 +46,18 @@ const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, }: HomeT
 
                 if (docSnap.exists()) {
                     const HomeTile: HomeTileForm = HomeTileForm.fromJson(docSnap.data());
-                    setFormState(HomeTileForm.fromJson(docSnap.data()));
-                    HomeTileFormRef = HomeTileForm.fromJson(formState);
-                    setFileList([{
-                        uid: "1",
-                        name: "image.png",
-                        url: HomeTile.imageUrl,
-                    }]);
-
+                    
+                    setValue('title', HomeTile.title);
+                    setValue('year', HomeTile.year);
+                    setValue('description', HomeTile.description);
+                    setValue('format', HomeTile.format);
+                    setValue('imageUrl', HomeTile.imageUrl);
+                    
+                }
+                else {
+                    setValue('format', HomeTileType.Medium);
+                    let newPosition = await getNewPosition();
+                    setValue('position', newPosition);
                 }
             }
             return;
@@ -141,39 +85,32 @@ const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, }: HomeT
 
     };
 
-    const handleSelectChange = (value: string) => {
-        HomeTileFormRef.format = value as HomeTileType;
-        setFormState({ ...HomeTileFormRef });
-        return;
-    };
-
-    const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
-        switch (field) {
-            case "title":
-                setFormState(prevState => ({ ...prevState, title: e.target.value }));
-                setTitleInputStatus(false);
-                setChangedTitle(true);
-                break;
-            case "year":
-                setFormState(prevState => ({ ...prevState, year: e.target.value }));
-                setYearInputStatus(false);
-                setChangedYear(true);
-                break;
-            case "description":
-                setFormState(prevState => ({ ...prevState, description: e.target.value }));
-                setDescriptionInputStatus(false);
-                setChangedDescription(true);
-                break;
-            default:
-                console.log("should not happen");
-        }
-
-        return;
-
-    };
-
+    // const handleSelectChange = (value: string) => {
+    //     HomeTileFormRef.format = value as HomeTileType;
+    //     setFormState({ ...HomeTileFormRef });
+    //     return;
+    // };
+    const [loadings, setLoadings] = useState<boolean>(false);
+    
     const submitForm: SubmitHandler<HomeTileForm> = async (data) => {
-
+        setLoadings(true);
+        console.log(register('title'));
+        console.log(register('year'));
+        console.log(register('description'));
+        console.log(register('format'));
+        console.log(register('imageUrl'));
+        try {
+            const docRef = doc(firestore, "HomeTiles", tileId!);
+            await updateDoc(docRef, {
+                title: register('title'), year: register('year'),
+                description: register('description'), format: register('format'),
+                imageUrl: register('imageUrl')
+            });
+        } catch (e) {
+            console.error(e);
+        }
+        
+        setLoadings(false);
     };
 
     return (
@@ -185,9 +122,6 @@ const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, }: HomeT
                 <TextField
                     {...register('title')}
                     label="Title"
-                    error={titleInputStatus}
-                    value={formState.title}
-                    onChange={(e) => handleFormChange(e, "title")}
                     className='single-inputs'
                     placeholder="Title"
                     fullWidth
@@ -195,19 +129,14 @@ const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, }: HomeT
                 <TextField
                     {...register('year')}
                     label="Year"
-                    error={yearInputStatus}
-                    value={formState.year}
-                    onChange={(e) => handleFormChange(e, "year")}
                     className='single-inputs'
                     placeholder="Year"
                     fullWidth
+                    
                 />
                 <TextField
                     {...register('description')}
                     label="Description"
-                    error={descriptionInputStatus}
-                    value={formState.description}
-                    onChange={(e) => handleFormChange(e, "description")}
                     className='single-inputs'
                     placeholder="Short Description"
                     multiline
@@ -216,9 +145,7 @@ const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, }: HomeT
                 />
                 <Select
                     {...register('format')}
-                    defaultValue="medium"
                     style={{ width: 120 }}
-                    onChange={handleSelectChange}
                     options={[
                         { value: 'tall', label: 'tall' },
                         { value: 'square', label: 'square' },
@@ -227,27 +154,13 @@ const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, }: HomeT
                     ]}
                 />
             </Space>
-            {/* <DropZone sendImage={getImageFromDrop}></DropZone> */}
-            <>
-                <Upload
-                    listType="picture-card"
-                    fileList={fileList}
-                >
-                    {fileList.length >= 1 ? null : uploadButton}
-                </Upload>
-               
-                    <Image
-                        wrapperStyle={{ display: 'none' }}
-                        preview={{
-                            visible: previewOpen,
-                            onVisibleChange: (visible) => setPreviewOpen(visible),
-                            afterOpenChange: (visible) => !visible && setPreviewImage(''),
-                        }}
-                        src={previewImage}
-                    />
+            <DropZone sendImage={getImageFromDrop}></DropZone>
+            <Button key="submit" type="primary" loading={loadings} onClick={handleSubmit(submitForm)}>
+                    Submit
+            </Button>
                 
 
-            </div>
+            </div> 
             );
 
 };

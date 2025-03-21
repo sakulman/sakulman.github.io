@@ -1,6 +1,7 @@
 import { HomeTileType } from "../enums/HomeTileType";
+import { ModalFormTab } from "./ModalFormTab.ts";
 
-export class HomeTileForm {
+export class HomeTileForm extends ModalFormTab{
     position: number = 0;
     title?: string;
     year?: string;
@@ -8,6 +9,7 @@ export class HomeTileForm {
     format?: HomeTileType;
     image?: File | null;
     imageUrl?: string;
+    tabNumber = 0;
 
 
     toJson() {
