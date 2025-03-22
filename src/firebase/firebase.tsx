@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, doc, collection, updateDoc, getDoc } from "@firebase/firestore";
+import { getFirestore, doc, collection, updateDoc, getDoc, getDocs } from "@firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 import { getStorage } from "firebase/storage";
 import { getFunctions } from "firebase/functions";
@@ -44,12 +44,36 @@ export const writeProjectPhotos = async(projectId: string, urls: string[]) => {
 };
 
 export const getProjectPhotos = async(projectId: string): Promise<string[]> => {
-  const hometileDocRef = doc(firestore, 'HomeTiles', projectId);
-  const docSnap = await getDoc(hometileDocRef);
+  const projectDocRef = doc(firestore, 'Projects', projectId);
+  const docSnap = await getDoc(projectDocRef);
+  console.log(docSnap);
   if(docSnap.exists()){
     const data = docSnap.data();
-    return data.ProjectPhotos;
+    
+    console.log(data.project_photos);
+    return data.project_photos;
   }
   return [];
 };
+
+interface projectIdWithUrl {
+  url: string;
+  id: string;
+};
+
+export const getProjectUrls = async (): Promise<projectIdWithUrl[]> => {
+  const projectCollectionRef = collection(firestore, 'Projects');
+  const querySnapshot = await getDocs(projectCollectionRef); 
+
+  const urls: projectIdWithUrl[] = [];
+
+  querySnapshot.forEach((doc) => {
+    const docData = doc.data();
+    const url: string = docData.url; 
+    const id: string = doc.id;
+    urls.push({url, id});
+  })
+  return urls;
+
+}
   

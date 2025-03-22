@@ -5,8 +5,10 @@ import { Image, Upload, Button } from 'antd';
 import type { GetProp, UploadFile, UploadProps } from 'antd';
 import { Reorder } from 'framer-motion';
 import { v4 } from 'uuid';
-import { getProjectPhotos, uploadImage } from '../../firebase/firebase.tsx';
+import { firestore, getProjectPhotos, uploadImage } from '../../firebase/firebase.tsx';
 import { ModalFormTab } from '../../types/ModalFormTab.ts';
+import { addDoc, collection, doc, getDoc, setDoc, getDocs, updateDoc } from "@firebase/firestore";
+
 
 interface PhotoUploadProps {
   projectId: string;
@@ -37,7 +39,13 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({projectId, updated, key}) => {
     // },
   ]);
 
-
+  // for some reason even when deleting the removed file, stays in the list 
+  // until you delete another one
+  const removeDeleted = (): UploadFile[] => {
+    const filtered: UploadFile[] = fileList.filter((file) => file.status != "removed");
+    setFileList(filtered);
+    return filtered;
+  }
 
 
 
@@ -90,12 +98,32 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({projectId, updated, key}) => {
 
   const handleRemove = (file: UploadFile) => {
     console.log(fileList);
-    setFileList((prevFileList) => prevFileList.filter((file) => file.status !== 'removed'));
+    // setFileList((prevFileList) => prevFileList.filter((file) => file.status !== 'removed'));
+    const updatedFileList: UploadFile[] = removeDeleted();
     let urls: string[] = fileList
     .filter((file) => file.status === 'done')
     .map((file) => file.url).filter(
         (url) => url !== undefined) as string[];
+    console.log(urls);
     updated(urls);
+  };
+
+  const submitPhotos = async ()  => {
+    const docRef = doc(firestore, "Projects", projectId!);
+    let urls: string[] = fileList
+    .filter((file) => file.status === 'done')
+    .map((file) => file.url).filter(
+        (url) => url !== undefined) as string[];
+    console.log(urls);
+    try{
+      await setDoc(docRef, {
+        project_photos: urls
+      },
+      { merge: true });
+    } catch(e) {
+      console.log(e);
+    }
+    
   };
 
   return (
@@ -119,6 +147,10 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({projectId, updated, key}) => {
       <Button type="primary" onClick={handleUpload} icon={<UploadOutlined />}>
         Upload
         <input type='file' multiple ref={fileInputRef} style={{display: 'none'}} onChange={handleFileChange}></input>
+      </Button>
+
+      <Button type='primary' onClick={submitPhotos}>
+        Submit
       </Button>
     </>
 

@@ -134,7 +134,10 @@ const HomeTileModal: React.FC<ModalComponentProps> = ({ isModalOpen, handleCance
   const [changedDescription, setChangedDescription] = useState<boolean>(false);
   const [changedImageUrl, setChangedImageUrl] = useState<boolean>(false);
 
-  let HomeTileFormRef = new HomeTileForm();
+  var HomeTileFormRef = new HomeTileForm();
+  HomeTileFormRef.title = "";
+  HomeTileFormRef.description = "";
+  HomeTileFormRef.year = "";
   HomeTileFormRef.format = HomeTileType.Medium;
   const [formState, setFormState] = useState({ ...HomeTileFormRef });
 

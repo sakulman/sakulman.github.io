@@ -125,6 +125,7 @@ const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, updated,
                     className='single-inputs'
                     placeholder="Title"
                     fullWidth
+                    InputLabelProps={{ shrink: true }}
                 />
                 <TextField
                     {...register('year')}
@@ -132,6 +133,7 @@ const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, updated,
                     className='single-inputs'
                     placeholder="Year"
                     fullWidth
+                    InputLabelProps={{ shrink: true }}
                     
                 />
                 <TextField
@@ -139,9 +141,10 @@ const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, updated,
                     label="Description"
                     className='single-inputs'
                     placeholder="Short Description"
-                    multiline
+                    multiline  // for some reason having multiline here causes an MUI bug
                     rows={4}
                     fullWidth
+                    InputLabelProps={{ shrink: true }}
                 />
                 <Select
                     {...register('format')}
