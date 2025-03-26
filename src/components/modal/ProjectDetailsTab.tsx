@@ -11,8 +11,8 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { TextField } from '@mui/material';
 import { ModalFormTab } from '../../types/ModalFormTab.ts';
 
-interface HomeTileTabProps {
-    tileId: string | null;
+interface ProjectDetailProps {
+    projectId: string | null;
     isModalOpen: boolean;
     updated: (newForm: ModalFormTab, key: String) => void;
 };
@@ -23,9 +23,9 @@ interface Positions {
 };
 
 
-const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, updated,  }: HomeTileTabProps) => {
+const ProjectDetailsTab: React.FC<ProjectDetailProps> = ({ projectId, isModalOpen, updated,  }: ProjectDetailProps) => {
 
-    const { register, formState, setValue, handleSubmit, getValues } = useForm<HomeTileForm>();
+    const { register, setValue, handleSubmit } = useForm<HomeTileForm>();
 
     const HomeTilesRef = collection(firestore, "HomeTiles");
 
@@ -37,10 +37,11 @@ const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, updated,
     };
 
 
+
     useEffect(() => {
         const fetchData = async () => {
-            if (tileId != null) {
-                const docRef = doc(firestore, "HomeTiles", tileId);
+            if (projectId != null) {
+                const docRef = doc(firestore, "HomeTiles", projectId);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
@@ -64,7 +65,7 @@ const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, updated,
 
         fetchData();
 
-    }, [isModalOpen]);
+    }, []);
 
     const positionData = useRef<Positions[]>([]);
 
@@ -93,21 +94,28 @@ const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, updated,
     
     const submitForm: SubmitHandler<HomeTileForm> = async (data) => {
         setLoadings(true);
-        
-        if (formState.dirtyFields){
-
+        console.log(register('title'));
+        console.log(register('year'));
+        console.log(register('description'));
+        console.log(register('format'));
+        console.log(register('imageUrl'));
+        try {
+            const docRef = doc(firestore, "HomeTiles", projectId!);
+            await updateDoc(docRef, {
+                title: register('title'), year: register('year'),
+                description: register('description'), format: register('format'),
+                imageUrl: register('imageUrl')
+            });
+        } catch (e) {
+            console.error(e);
         }
-        // const uploading: boolean = await 
-        //     writeHomeTileToFirestore(tileId!, getValues('title')!, 
-        //         getValues('year')!, getValues('description')!,
-        //         getValues('format')!, getValues('imageUrl')!);
         
         setLoadings(false);
     };
 
     return (
         <div>
-            {tileId ? <h2>Edit Home Page Feature</h2> : <h2>Add Home Page Feature</h2>}
+            {projectId ? <h2>Edit Project Details</h2> : <h2>Add Project Details</h2>}
 
             <Space className='input-container' direction='vertical' size={10}>
 
@@ -160,5 +168,5 @@ const HomeTileTab: React.FC<HomeTileTabProps> = ({ tileId, isModalOpen, updated,
 
 };
 
-            export default HomeTileTab;
+            export default ProjectDetailsTab;
 

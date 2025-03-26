@@ -5,6 +5,11 @@ import { getStorage } from "firebase/storage";
 import { getFunctions } from "firebase/functions";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
+import { ProjectDetails } from "../types/ProjectDetails.ts";
+import { HomeTileForm } from "../types/HomeTileForm.ts";
+import { HomeTileType } from "../enums/HomeTileType.ts";
+import { Project } from "../types/Project.ts";
+import { setDoc } from "firebase/firestore";
 
 
 const firebaseConfig = {
@@ -25,31 +30,106 @@ export const storage = getStorage(app);
 export const functions = getFunctions(app);
 
 export const uploadImage = async (image: File, name: string): Promise<string> => {
-  try{
+  try {
     const imageRef = ref(storage, `images/${v4() + name}`);
     const snapshot = await uploadBytes(imageRef, image);
     const url = await getDownloadURL(snapshot.ref);
     return url;
   }
-  catch(e){
+  catch (e) {
     console.error(e);
   }
   return Promise.reject("error");
 };
 
-export const writeProjectPhotos = async(projectId: string, urls: string[]) => {
-  // add the urls to the project document
-  const hometileDocRef = doc(firestore, 'HomeTiles', projectId);
-  updateDoc(hometileDocRef, {ProjectPhotos: urls});
+export const getProjects = async (): Promise<Project[]> => {
+  try{
+    const querySnapshot = await getDocs(collection(firestore, "Projects"));
+    const projectList: Project[] = [];
+    querySnapshot.docs.forEach(doc => {
+      const data = doc.data();
+      projectList.push(Project.fromJson(data));
+    });
+    return projectList;
+  } catch (e){
+    console.log(e);
+    return [];
+  }
+}
+
+export const getProjectOrder = async (): Promise<string[]> => {
+  try{
+    const docRef = doc(firestore, "ProjectData", "HomeTileOrder");
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()){
+      const listOfProjects: string[] = docSnap.data()['list'];
+      return listOfProjects;
+    }
+    
+  } catch(error){
+    console.log(error);
+  }
+  return [];
+}
+
+export const writeProjectOrder = async (listOfProjects: string[]): Promise<boolean> => {
+  try{
+    const docRef = doc(firestore, "ProjectData", "HomeTileOrder");
+    await setDoc(docRef, { ['list']: listOfProjects}, { merge: true });
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
+export const writeProjectToFirestore = async (proj: Project): Promise<boolean> => {
+  try {
+    if (!proj.projectId){
+      return false;
+    }
+
+    // upload the project data
+    const docRef = doc(firestore, "Projects", proj.projectId!);
+    await setDoc(docRef, proj.toJson());
+
+    // add it to the project order 
+    const projectList: string[] = await getProjectOrder();
+    projectList.push(proj.projectId);
+    return await writeProjectOrder(projectList);
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+
 };
 
-export const getProjectPhotos = async(projectId: string): Promise<string[]> => {
+export const writeProjectPhotos = async (projectId: string, urls: string[]) => {
+  // add the urls to the project document
+  const hometileDocRef = doc(firestore, 'HomeTiles', projectId);
+  updateDoc(hometileDocRef, { ProjectPhotos: urls });
+};
+
+export const getProject = async (projectId: string): Promise<Project | null> => {
   const projectDocRef = doc(firestore, 'Projects', projectId);
   const docSnap = await getDoc(projectDocRef);
   console.log(docSnap);
-  if(docSnap.exists()){
+  if (docSnap.exists()) {
     const data = docSnap.data();
-    
+    const newProjectDetails: Project = Project.fromJson(data);
+    return newProjectDetails;
+  }
+  return null;
+  
+
+}
+
+export const getProjectPhotos = async (projectId: string): Promise<string[]> => {
+  const projectDocRef = doc(firestore, 'Projects', projectId);
+  const docSnap = await getDoc(projectDocRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+
     console.log(data.project_photos);
     return data.project_photos;
   }
@@ -61,19 +141,28 @@ interface projectIdWithUrl {
   id: string;
 };
 
+export const getProjectForEditorTile = async (projectId: string): Promise<Project | null> => {
+  const projectDocRef = doc(firestore, 'Projects', projectId);
+  const docSnap = await getDoc(projectDocRef);
+  if (docSnap.exists()) { 
+    const data = docSnap.data();
+    return Project.fromJson(data);
+  }
+  return null;
+}
+
 export const getProjectUrls = async (): Promise<projectIdWithUrl[]> => {
   const projectCollectionRef = collection(firestore, 'Projects');
-  const querySnapshot = await getDocs(projectCollectionRef); 
+  const querySnapshot = await getDocs(projectCollectionRef);
 
   const urls: projectIdWithUrl[] = [];
 
   querySnapshot.forEach((doc) => {
     const docData = doc.data();
-    const url: string = docData.url; 
+    const url: string = docData.url;
     const id: string = doc.id;
-    urls.push({url, id});
+    urls.push({ url, id });
   })
   return urls;
 
 }
-  

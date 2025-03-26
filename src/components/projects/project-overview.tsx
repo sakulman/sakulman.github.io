@@ -1,6 +1,5 @@
 import React from 'react';
 import { Grid2 as Grid } from '@mui/material';
-import { Project } from '../../types/Project.ts';
 import "./project-overview.css";
 
 const ProjectOverview: React.FC<{ projectId: string, imageUrl: string, }> = ({ projectId, imageUrl }) => {

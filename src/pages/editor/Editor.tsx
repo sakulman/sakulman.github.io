@@ -1,63 +1,35 @@
 import * as React from 'react';
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import "./Editor.css";
-import { firestore, storage } from "../../firebase/firebase.tsx";
-import { addDoc, collection, doc, getDocs, updateDoc } from "@firebase/firestore";
-import { useState, useCallback, useRef } from 'react';
-import { HomeTileForm } from '../../types/HomeTileForm.ts';
+import { getProjectOrder, storage, writeProjectOrder } from "../../firebase/firebase.tsx";
+import { useState} from 'react';
 import { Reorder, useDragControls } from "motion/react";
-import { EditOutlined, EllipsisOutlined, PlusCircleOutlined, SettingOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import { Avatar, Button, Card, Flex, Switch } from 'antd';
 import ReorderCard from '../../components/reordercard/ReorderCard.tsx';
-import HomeTileModal from '../../components/modal/HomeTileModal.tsx';
+import ProjectEditorModal from '../../components/modal/ProjectEditorModal.tsx';
 
-interface PositionsMap {
-    [key: number]: string;
-}
 
 function Editor() {
 
     const [triggerRender, setTriggerRender] = useState(0);
 
-    const positions = useRef<PositionsMap>({});
+   
 
-    const [tilesInOrder, setTilesInOrder] = useState<string[]>([]);
+    const [tileList, setTileList] = useState<string[]>([]);  
 
-    const getPositions = async () => {
-        const querySnapshot = await getDocs(collection(firestore, "HomeTiles"));
-        querySnapshot.docs.forEach(doc => {
-            const data = doc.data();
-            positions.current[data.position] = doc.id;
-        });
-    }
-
-    const setUpList = async () => {
-        const keys: number[] = Object.keys(positions.current).map(key => parseInt(key));
-        keys.sort((a, b) => a - b);
-        const tilesList: string[] = [];
-        for (let i = 0; i < keys.length; i++) {
-            tilesList.push(positions.current[keys[i]]);
-        }
-        setTilesInOrder(tilesList);
-    }
 
     React.useEffect(() => {
         const fetchData = async () => {
-            await getPositions();
-            console.log(positions.current);
-            await setUpList();
-            console.log(tilesInOrder);
+            const tiles: string[] = await getProjectOrder();
+            setTileList(tiles);
         };
-        console.log("re rendering from use effect")
         fetchData();
     }, [triggerRender]);
 
     const submitOrder = async () => {
-
-        for (let i = 0; i < tilesInOrder.length; i++) {
-            const docRef = doc(firestore, "HomeTiles", tilesInOrder[i]);
-            await updateDoc(docRef, { position: i + 1 });
-        }
+        await writeProjectOrder(tileList);
+        
     };
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -80,10 +52,10 @@ function Editor() {
     };
 
     const deleteTile = (id: string) => {
-        let copy = [...tilesInOrder];
+        let copy = [...tileList];
         const index = copy.indexOf(id);
         copy.splice(index, 1);
-        setTilesInOrder(copy);
+        setTileList(copy);
     };
 
 
@@ -93,8 +65,8 @@ function Editor() {
 
             <Grid size={6} className="editor-main-grid">
                 <div className='reorder-area'>
-                    <Reorder.Group className="reorder-group" values={tilesInOrder} onReorder={setTilesInOrder}>
-                        {tilesInOrder.map((tileId) => {
+                    <Reorder.Group className="reorder-group" values={tileList} onReorder={submitOrder}>
+                        {tileList.map((tileId) => {
                             return (
 
                                 <ReorderCard deleteTile={deleteTile} reRender={triggerReRender} key={tileId} id={tileId}></ReorderCard>
@@ -105,15 +77,15 @@ function Editor() {
                         <PlusCircleOutlined />
 
                     </div>
-                    <HomeTileModal
+                    <ProjectEditorModal
                         isModalOpen={isModalOpen}
                         handleCancel={handleCancel}
                         handleOk={handleOk}
-                        tileId={null}
+                        projectId={null}
                         reRender={triggerReRender}
                     >
 
-                    </HomeTileModal>
+                    </ProjectEditorModal>
                 </div>
                 <div className='save-tile-order'>
                     <Button color='default' className='save-tile-order-button' onClick={submitOrder} >Save Tile Order</Button>

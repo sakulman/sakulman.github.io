@@ -126,7 +126,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import reportWebVitals from './reportWebVitals';
+import reportWebVitals from './reportWebVitals.js';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import HomePage from './pages/homepage/HomePage.tsx';
 import SelectedWorks from './pages/selectedworks/SelectedWorks.tsx';

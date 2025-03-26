@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Grid2 as Grid, IconButton } from '@mui/material';
-import { firestore } from '../../firebase/firebase.tsx';
+import { firestore, getProjectForEditorTile } from '../../firebase/firebase.tsx';
 import { collection, deleteDoc, doc, getDoc } from '@firebase/firestore';
 import { HomeTileForm } from '../../types/HomeTileForm.ts';
 import "./ReorderCard.css";
@@ -11,7 +11,8 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Divider, Modal, message, Popconfirm } from 'antd';
 import { Reorder as ReorderIcon } from '@mui/icons-material';
 import Upload from '../../pages/upload/Upload.tsx';
-import HomeTileModal from '../modal/HomeTileModal.tsx';
+import ProjectEditorModal from '../modal/ProjectEditorModal.tsx';
+import { Project } from '../../types/Project.ts';
 interface ReorderCardProps {
     id: string;
     reRender: () => void;
@@ -36,22 +37,19 @@ const ReorderCard = React.forwardRef<HTMLDivElement, ReorderCardProps>(({ id, re
             </IconButton>
         );
     }
-    const [homeTile, setHomeTile] = useState<HomeTileForm | null>(null);
+    const [project, setProject] = useState<Project | null>(null);
 
     const HomeTilesRef = collection(firestore, "HomeTiles");
     const dragControls = useDragControls();
 
     useEffect(() => {
         const fetchDoc = async () => {
-            const docRef = doc(firestore, "HomeTiles", id);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                setHomeTile(HomeTileForm.fromJson(docSnap.data()));
+            const proj: Project | null = await getProjectForEditorTile(id);
+            if (proj == null) {
+                console.log("No such document!");
                 return;
             }
-            console.log("No such document!");
-            return;
+            setProject(proj!);
         }
         fetchDoc();
     }, []);
@@ -89,11 +87,11 @@ const ReorderCard = React.forwardRef<HTMLDivElement, ReorderCardProps>(({ id, re
                 <Grid size={1}></Grid>
                 <Grid size={2}>
                     <div >
-                        <img className='reorder-card-image' src={homeTile?.imageUrl}></img>
+                        <img className='reorder-card-image' src={project?.displayImage}></img>
                     </div>
                 </Grid>
                 <Grid className='reorder-card-text' size={3}>
-                    <h2>{homeTile?.title}</h2>
+                    <h2>{project?.title}</h2>
 
                 </Grid>
                 <Grid size={2}>
@@ -105,7 +103,7 @@ const ReorderCard = React.forwardRef<HTMLDivElement, ReorderCardProps>(({ id, re
                 <Divider type="vertical" className='reorder-divider' />
                 <Popconfirm
                     title="Delete"
-                    description={`Are you sure you want to delete ${homeTile?.title}?`}
+                    description={`Are you sure you want to delete ${project?.title}?`}
                     onConfirm={handleDeleteTile}
                     okText="Yes"
                     cancelText="No"
@@ -124,15 +122,15 @@ const ReorderCard = React.forwardRef<HTMLDivElement, ReorderCardProps>(({ id, re
                 </Grid>
 
             </Grid>
-            <HomeTileModal
+            <ProjectEditorModal
                 isModalOpen={isModalOpen}
                 handleCancel={handleCancel}
                 handleOk={handleOk}
-                tileId={id}
+                projectId={id}
                 reRender={() => { }}
             >
 
-            </HomeTileModal>
+            </ProjectEditorModal>
 
         </Reorder.Item>
     );
