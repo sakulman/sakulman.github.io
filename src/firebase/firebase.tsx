@@ -13,7 +13,7 @@ import { setDoc } from "firebase/firestore";
 
 
 const firebaseConfig = {
-  apiKey: `${process.env.REACT_APP_FIREBASE_API_KEY}`,
+  apiKey: `AIzaSyCI3ut2ToC4OZUCXxW-pbSsQiPFjFwxH0s`,
   authDomain: "portfolio-8f239.firebaseapp.com",
   projectId: "portfolio-8f239",
   storageBucket: "portfolio-8f239.firebasestorage.app",
@@ -113,15 +113,26 @@ export const writeProjectPhotos = async (projectId: string, urls: string[]) => {
 export const getProject = async (projectId: string): Promise<Project | null> => {
   const projectDocRef = doc(firestore, 'Projects', projectId);
   const docSnap = await getDoc(projectDocRef);
-  console.log(docSnap);
   if (docSnap.exists()) {
     const data = docSnap.data();
     const newProjectDetails: Project = Project.fromJson(data);
     return newProjectDetails;
   }
   return null;
-  
+}
 
+export const getProjectListInOrder = async (): Promise<Project[]> => {
+  const projectOrderRef = doc(firestore, 'ProjectData', 'HomeTileOrder');
+  const projectOrderDocSnap = await getDoc(projectOrderRef);
+  if (!projectOrderDocSnap.exists()) return [];
+  const projectOrder: string[] = projectOrderDocSnap.data().list as string[];
+  const projectList: Project[] = [];
+  for (const proj of projectOrder){
+    const newProj: Project | null = await getProject(proj);
+    if (newProj == null) continue;
+    projectList.push(newProj!);
+  }
+  return projectList;
 }
 
 export const getProjectPhotos = async (projectId: string): Promise<string[]> => {

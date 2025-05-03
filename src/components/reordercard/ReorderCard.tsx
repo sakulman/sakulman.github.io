@@ -20,9 +20,8 @@ interface ReorderCardProps {
 
 }
 
-const ReorderCard = React.forwardRef<HTMLDivElement, ReorderCardProps>(({ id, reRender, deleteTile }: ReorderCardProps) => {
-
-
+const ReorderCard = React.forwardRef<HTMLDivElement, ReorderCardProps>((props, ref) => {
+    const { id, reRender, deleteTile } = props; // Extract props from 'props'
     
     interface ReorderIconProps {
         dragControls: DragControls;

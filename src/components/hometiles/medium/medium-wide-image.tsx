@@ -1,13 +1,26 @@
+import { useEffect, useState } from 'react';
 import * as React from 'react';
 import { Box, Grid2 as Grid } from '@mui/material';
 import "./medium-wide-image.css"
-import { HomeTileForm } from '../../../types/HomeTileForm.ts';
+import { Project } from '../../../types/Project.ts';
+import { getProject } from '../../../firebase/firebase.tsx';
 
-interface MediumWideImageProps {
-    data: HomeTileForm;
-};
 
-function MediumWideImage(form: MediumWideImageProps) {
+const MediumWideImage: React.FC<{ project: Project }> = ({project}) =>  {
+
+    // const [project, setProject] = useState<Project>();
+
+    // useEffect( () => {
+    //     const initialize = async () =>{
+    //         const proj: Project | null = await getProject(projectId);
+    //         if (project != null) {
+    //             setProject(proj!);
+    //         }
+    //         return;
+    //     }
+    //     initialize();
+
+    // }, [])
 
     return (
         <Grid className='home-row' container spacing={2}>
@@ -17,19 +30,19 @@ function MediumWideImage(form: MediumWideImageProps) {
                 <Box className='medium-descriptor-text'>
                     <Box className='text-title'>
                         <h1 className='clickable-title'>
-                            {form.data.title}
+                            {project ? project.title: ''} 
                         </h1> 
-                        <p className='clickable-title'>{form.data.year}</p>
+                        <p className='clickable-title'>{project ? project.date: ''}</p>
                 </Box>
                     <Box className='medium-text-desc'>
-                        <p>{form.data.description}</p>
+                        <p>{project ? project.summary : ''}</p>
                 </Box>
                 </Box>
                 
                 
             </Grid>
             <Grid className='image-tile' size={7}>
-                <img className='medium-image' src={form.data.imageUrl} />
+                <img className='medium-image' src={project ? project.displayImage : ''} />
             </Grid>
             <Grid size={1.5}></Grid>
         </Grid>

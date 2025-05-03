@@ -7,16 +7,21 @@ import SquareImage from '../../components/hometiles/square/square-image.tsx';
 import Footer from '../../components/footer/footer.tsx';
 import { useEffect, useState } from 'react';
 import MobileTile from '../../components/hometiles/mobile/mobile-tile.tsx';
-import { firestore, storage } from "../../firebase/firebase.tsx";
+import { firestore, getProject, getProjectListInOrder, getProjectOrder, storage } from "../../firebase/firebase.tsx";
 import { collection, getDocs } from 'firebase/firestore';
 import { HomeTileType } from '../../enums/HomeTileType.ts';
 import { HomeTileForm } from '../../types/HomeTileForm.ts';
 import UserList from '../../components/test/test.js';
+import { Project } from '../../types/Project.ts';
+import HomeTile from '../../components/hometiles/hometile.tsx';
 
 function HomePage() {
 
     const [isMobile, setIsMobile] = useState(window.matchMedia('(max-width: 1000px)').matches);
-    const [tiles, setTiles] = useState<HomeTileForm[]>([]);
+
+    const [projectObjects, setProjectObjects] = useState<Project[]>([]);
+
+    const [rerender, setRerender] = useState<number>(0);
 
     useEffect(() => {
         const mediaQuery = window.matchMedia('(max-width: 1000px)');
@@ -33,35 +38,51 @@ function HomePage() {
     }, []);
 
     useEffect(() => {
-        const fetchTiles = async () => {
-            const querySnapshot = await getDocs(collection(firestore, "HomeTiles"));
-            const tilesData = querySnapshot.docs.map(doc => HomeTileForm.fromJson(doc.data()));
-            setTiles(tilesData);
+        const fetchProjects = async () => {
+
+            const projects: Project[] = await getProjectListInOrder();
+            setProjectObjects(projects);
+            console.log(projects);
+            console.log(projectObjects);
+
+            // for (const projectId of projects){
+            //     const oneProj: Project | null = await getProject(projectId);
+            //     if (oneProj == null) continue;
+            //     setProjectObjects(prevState => [...prevState, oneProj])
+            // }
+            // setProjectObjects[projects];
+             
         };
 
-        fetchTiles();
+        fetchProjects();
     }, []);
 
+
+    console.log("dfgd")
     return (
 
 
         <Box className='body'>
             {/* <UserList /> */}
-
+{/* 
             {
+                
                 !isMobile && (
                     <div>
-                        {tiles.map(tile => {
+                        
+                        {
+                        
+                        projectObjects ? 
+                        projectObjects.map(tile => {
+                            if (!tile) return;
                             return (
-                                <div key={tile.description}>
-                                    {tile.format === HomeTileType.Medium && <MediumWideImage data={tile} />}
-                                    {tile.format === HomeTileType.Wide && <UltraWideImage data={tile} />}
-                                    {tile.format === HomeTileType.Square && <SquareImage data={tile} />}
+                                <div key={tile.summary!}>
+                                    <HomeTile projectId={tile.projectId!} />
                                     <Box className='home-spacer'></Box>
                                 </div>
                                 
                             );
-                        })}
+                        }) : "egihuasadaisodfaosidh"}
                         
                     </div>
                 )
@@ -70,27 +91,21 @@ function HomePage() {
             {
                 isMobile && (
                     <div>
-                        {tiles.map(tile => {
-                            console.log(tile.imageUrl);
+                        {projectObjects.map(tile => {
                             return (
-                                <div key={tile.description}>
-                                    <MediumWideImage data={tile} />
+                                <div key={tile.projectId!}>
+                                    <MediumWideImage projectId={tile.projectId!} />
                                     
                                     <Box className='mobile-home-spacer'></Box>
                                 </div>
                                 
                             );
                         })}
-                        {/* <MobileTile data/>
-                        <Box className='mobile-home-spacer'></Box>
-                        <MobileTile />
-                        <Box className='mobile-home-spacer'></Box>
-                        <MobileTile />
-                        <Box className='mobile-home-spacer'></Box> */}
+
                     </div>
 
                 )
-            }
+            } */}
 
 
             <Footer></Footer>
