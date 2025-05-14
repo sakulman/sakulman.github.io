@@ -18,7 +18,7 @@ interface ScrollState {
 const initialState: ScrollState = {
     value: {},
     move: [0, 0],
-    spacer: {1: 0, 2: 0, 3: 0, 4: 0},
+    spacer: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
     recent: 1,
     clicked: 0,
 };

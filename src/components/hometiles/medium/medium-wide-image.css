@@ -8,6 +8,10 @@
  
 }
 
+.medium-image:hover{
+    cursor: pointer;
+}
+
 .medium-descriptor-text{
     display: flex;
     flex-direction: column;
@@ -19,6 +23,10 @@
 
 .text-title{
     /* line-height: 6px; */
+}
+
+.clickable-title{
+    line-height: normal;
 }
 
 .clickable-title:hover{

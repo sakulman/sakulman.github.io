@@ -9,10 +9,30 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import NavDrawer from './NavDrawer.tsx';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { SelectedWorksOrder } from '../../types/SelectedWorksOrder.ts';
+import { createSelectedWorksList } from '../../firebase/firebase.tsx';
+import { Project } from '../../types/Project.ts';
+
+type ProjectLabel = { key: string; label: JSX.Element; path: string };
+type ProjectYearLabel = { key: string, label: string, children: ProjectLabel[] }
 
 function NavBar() {
     
     const navigate = useNavigate();
+
+    const navigateToProject = (url: string) => {
+        navigate(`/projects/${url}`);
+    }
+
+    const [projects, setProjects] = useState<SelectedWorksOrder[]>([]);
+
+    useEffect(() => {
+        const getData = async () => {
+            const projectDataList: SelectedWorksOrder[] = await createSelectedWorksList();
+            setProjects(projectDataList);
+        }
+        getData();
+    }, [])
     
     const more: MenuProps['items'] = [
         {
@@ -43,8 +63,39 @@ function NavBar() {
         }
     };
 
-    const selectedWorks: MenuProps['items'] = [
+    const getYears = (): ProjectYearLabel[]  => {
+        const uniqueYears: number[] = [...new Set(projects.map(proj => proj[0]))];
 
+        return uniqueYears.map(year => {
+            return {
+                key: year.toString(),
+                label: year.toString(),
+                children: getProjectsForYear(year)
+            };
+        });
+    }
+
+    const getProjectsForYear = (year: number): ProjectLabel[] => {
+        const projectsForThisYear: ProjectLabel[] = [];
+        for (let i = 0; i < projects.length; i++){
+            if (projects[i][0] === year){
+                projectsForThisYear.push({
+                    key: projects[i][3],
+                    label: (
+                        <a onClick={() => navigateToProject(projects[i][4])}>
+                            {projects[i][1]}
+                        </a>
+                    ),
+                    // label: projects[i][1],
+                    path: `/projects/${projects[i][4]}`
+                });
+            }
+        }
+        return projectsForThisYear;
+    }
+
+    const selectedWorks: MenuProps['items'] = projects.length > 0 ? getYears() : 
+    [
         {
             key: '2024',
             label: '2024',

@@ -7,6 +7,10 @@
  
 }
 
+.image:hover{
+    cursor: pointer;
+}
+
 .descriptor-text{
     display: flex;
     flex-direction: row;
@@ -27,4 +31,8 @@
 
 .text-desc p {
     white-space: pre-wrap; 
+}
+
+.wide-text-desc {
+    margin-top: 20px;
 }

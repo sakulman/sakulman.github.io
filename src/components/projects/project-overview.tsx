@@ -1,16 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid2 as Grid } from '@mui/material';
 import "./project-overview.css";
+import { Project } from '../../types/Project';
+import { getProject } from '../../firebase/firebase.tsx';
 
-const ProjectOverview: React.FC<{ projectId: string, imageUrl: string, }> = ({ projectId, imageUrl }) => {
+const ProjectOverview: React.FC<{ projectId: string, thisProject: Project | undefined }> = ({ projectId, thisProject }) => {
+
+
+    // const [project, setProject] = useState<Project>();
+
+
+    // useEffect(() => {
+    //     const fetchProjectData = async () => {
+    //         var currentProject: Project | null = await getProject(projectId);
+
+    //         if (currentProject != null) {
+    //             setProject(currentProject);
+    //         }
+            
+    //     };
+
+    //     fetchProjectData();
+    // });
+
     return (
         <Grid className="project-overview-container" container spacing={2}>
 
             <Grid size={2}></Grid>
             <Grid size={8}>
                 <div className='project-overview-image-container'>
-                    <img className="project-overview-image" style={{ width: "100%" }} src={imageUrl}></img>
-                    <div className="project-overview-location"><em>Florence, Italy</em></div>
+                    <img className="project-overview-image" style={{ width: "100%" }} src={thisProject?.displayImage ? thisProject.displayImage : ''}></img>
+                    <div className="project-overview-location"><em>{thisProject?.location ? thisProject.location : ''}</em></div>
                 </div>
 
 
@@ -21,7 +41,7 @@ const ProjectOverview: React.FC<{ projectId: string, imageUrl: string, }> = ({ p
             <Grid size={8}>
                 <div className='project-overview-spacer'></div>
                 <div className='project-overview-description'>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <p>{thisProject?.longDescription ? thisProject.longDescription : ''}</p>
                 </div>
             </Grid>
 

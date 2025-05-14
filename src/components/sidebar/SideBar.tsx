@@ -50,10 +50,11 @@ function SideBar() {
     return (
 
         <Stack className='side-stack' spacing={0}>
-            <h2 onClick={() => scrollTo(1)} className={check(2024) ? "selected-stack-item" : "stack-item"} >2024</h2>
-            <h2 onClick={() => scrollTo(2)} className={check(2023) ? "selected-stack-item" : "stack-item"}>2023</h2>
-            <h2 onClick={() => scrollTo(3)} className={check(2022) ? "selected-stack-item" : "stack-item"}>2022</h2>
-            <h2 onClick={() => scrollTo(4)} className={check(2021) ? "selected-stack-item" : "stack-item"}>2021</h2>
+            <h2 onClick={() => scrollTo(1)} className={check(2024) ? "selected-stack-item" : "stack-item"} >2025</h2>
+            <h2 onClick={() => scrollTo(2)} className={check(2024) ? "selected-stack-item" : "stack-item"} >2024</h2>
+            <h2 onClick={() => scrollTo(3)} className={check(2023) ? "selected-stack-item" : "stack-item"}>2023</h2>
+            <h2 onClick={() => scrollTo(4)} className={check(2022) ? "selected-stack-item" : "stack-item"}>2022</h2>
+            <h2 onClick={() => scrollTo(5)} className={check(2021) ? "selected-stack-item" : "stack-item"}>2021</h2>
 
         </Stack>
     );

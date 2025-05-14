@@ -20,9 +20,12 @@ const ProjectImages: React.FC<{ projectId: string }> = ({ projectId }) => {
     const [projectPhotos, setProjectPhotos] = useState<string[]>([]);
 
     useEffect(() => {
+
+
         const fetchProjectPhotos = async () => {
-            let urls: string[] = await getProjectPhotos("UbRx0qvlRmO1ar2JLVP1");
-            let newFileList = urls.map((url) => {
+            var urls: string[] = [];
+            urls = await getProjectPhotos("UbRx0qvlRmO1ar2JLVP1");
+            var newFileList = urls.map((url) => {
                 return {
                     uid: v4(),
                     name: url,

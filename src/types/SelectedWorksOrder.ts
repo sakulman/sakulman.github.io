@@ -1,0 +1,1 @@
+export type SelectedWorksOrder = [year: number, title: string, displayImage: string, projectId: string, url: string];

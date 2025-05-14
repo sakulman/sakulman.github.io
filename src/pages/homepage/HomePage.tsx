@@ -56,15 +56,12 @@ function HomePage() {
 
         fetchProjects();
     }, []);
-
-
-    console.log("dfgd")
     return (
 
 
         <Box className='body'>
             {/* <UserList /> */}
-{/* 
+
             {
                 
                 !isMobile && (
@@ -77,7 +74,7 @@ function HomePage() {
                             if (!tile) return;
                             return (
                                 <div key={tile.summary!}>
-                                    <HomeTile projectId={tile.projectId!} />
+                                    <HomeTile project={tile} />
                                     <Box className='home-spacer'></Box>
                                 </div>
                                 
@@ -94,7 +91,7 @@ function HomePage() {
                         {projectObjects.map(tile => {
                             return (
                                 <div key={tile.projectId!}>
-                                    <MediumWideImage projectId={tile.projectId!} />
+                                    <MediumWideImage project={tile} />
                                     
                                     <Box className='mobile-home-spacer'></Box>
                                 </div>
@@ -105,7 +102,7 @@ function HomePage() {
                     </div>
 
                 )
-            } */}
+            }
 
 
             <Footer></Footer>

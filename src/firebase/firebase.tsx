@@ -10,6 +10,7 @@ import { HomeTileForm } from "../types/HomeTileForm.ts";
 import { HomeTileType } from "../enums/HomeTileType.ts";
 import { Project } from "../types/Project.ts";
 import { setDoc } from "firebase/firestore";
+import { SelectedWorksOrder } from "../types/SelectedWorksOrder.ts";
 
 
 const firebaseConfig = {
@@ -141,8 +142,8 @@ export const getProjectPhotos = async (projectId: string): Promise<string[]> => 
   if (docSnap.exists()) {
     const data = docSnap.data();
 
-    console.log(data.project_photos);
-    return data.project_photos;
+    console.log(data.images);
+    return data.images;
   }
   return [];
 };
@@ -177,3 +178,26 @@ export const getProjectUrls = async (): Promise<projectIdWithUrl[]> => {
   return urls;
 
 }
+
+export const createSelectedWorksList = async (): Promise<SelectedWorksOrder[]> => {
+
+  const projects: Project[] = await getProjects();
+
+  var order: SelectedWorksOrder[] = [];
+  
+  projects.forEach(project => {
+    const thisProj: SelectedWorksOrder = [
+      project.year ? project.year : 0, 
+      project.title ? project.title : '',
+      project.displayImage ? project.displayImage : '',
+      project.projectId ? project.projectId : '',
+      project.url ? project.url : ''
+    ];
+    order.push(thisProj);
+  })
+  order.sort((a, b) => b[0] - a[0]);
+
+  return order;
+}
+
+

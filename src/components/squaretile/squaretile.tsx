@@ -4,18 +4,19 @@ import { motion } from 'framer-motion';
 import { add, subtract } from '../../state/scroll/scrollSlice.ts';
 import { useDispatch } from 'react-redux';
 import { Grid2 as Grid } from '@mui/material';
+import { SelectedWorksOrder } from '../../types/SelectedWorksOrder.ts';
 
 interface TileProps{
-    title: number;
+    projectInfo: SelectedWorksOrder;
 }
 
-function SquareTile({ title }: TileProps) {
+function SquareTile({ projectInfo }: TileProps) {
 
     const TextLayout = () => {
         return (
             <div className='card-text'>
                 <Grid container spacing={2} >
-                    <Grid size={12}>{title}</Grid>
+                    <Grid size={12}>{projectInfo[1]}</Grid>
                 </Grid>
             </div>
             
@@ -25,20 +26,20 @@ function SquareTile({ title }: TileProps) {
     const dispatch = useDispatch();
 
     const inView = () => {
-        dispatch(add(title));
-        console.log("+"+title);
+        dispatch(add(projectInfo[0]));
+        console.log("+"+projectInfo[0]);
     };
 
     const outView = () => {
-        dispatch(subtract(title));
-        console.log("-"+title);
+        dispatch(subtract(projectInfo[0]));
+        console.log("-"+projectInfo[0]);
     };
 
     return (
         <motion.div onViewportEnter={() => inView()} onViewportLeave={() => outView()}>
             <div className="card">
                 <div className="card-image">
-                    <img className='square-image' src='https://4kwallpapers.com/images/wallpapers/modern-architecture-look-up-reflection-glass-building-2048x2048-2881.jpg'></img>
+                    <img className='square-image' src={projectInfo[2]}></img>
                 </div>
                 <TextLayout></TextLayout>
             </div>
