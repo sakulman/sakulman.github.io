@@ -1,13 +1,26 @@
-.app-bar{
+.app-bar-sticky{
     display: flex;
     background-color: #e5e5e5;
     color: hsl(205, 11%, 22%);
     height: 120px;
     justify-content: left;
     align-items: center;
-    position: static;
+    /* position: static; */
     width: 100%;
     position: sticky;
+    z-index: 100;
+}
+
+.app-bar-fixed{
+    display: flex;
+    background-color: #e5e5e5;
+    color: hsl(205, 11%, 22%);
+    height: 120px;
+    justify-content: left;
+    align-items: center;
+    /* position: static; */
+    width: 100%;
+    position: fixed;
     z-index: 100;
 }
 

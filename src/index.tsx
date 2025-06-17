@@ -164,7 +164,7 @@ const App = () => {
       path: '/',
       element: (
         <>
-          <NavBar />
+          <NavBar isFixed={false} />
           <HomePage />
         </>
       ),
@@ -173,7 +173,7 @@ const App = () => {
       path: '/selected-works',
       element: (
         <>
-          <NavBar />
+          <NavBar isFixed={true} />
           <SelectedWorks />
         </>
       ),
@@ -182,7 +182,7 @@ const App = () => {
       path: '/eepy',
       element: (
         <>
-          <NavBar />
+          <NavBar isFixed={false} />
           <Upload />
         </>
       ),
@@ -191,7 +191,7 @@ const App = () => {
       path: '/editor',
       element: (
         <>
-          <NavBar />
+          <NavBar isFixed={false} />
           <Editor />
         </>
       ),
@@ -200,7 +200,7 @@ const App = () => {
       path: '/project-editor',
       element: (
         <>
-          <NavBar />
+          <NavBar isFixed={false} />
           <ProjectEditor />
         </>
       ),
@@ -209,7 +209,7 @@ const App = () => {
       path: '/project',
       element: (
         <>
-          <NavBar />
+          <NavBar isFixed={false} />
           <ProjectPage projectId="defaultProjectId" />
         </>
       ),
@@ -218,7 +218,7 @@ const App = () => {
       path: `/projects/${project.url}`,
       element: (
         <>
-          <NavBar />
+          <NavBar isFixed={false} />
           <Project projectId={project.id} />
         </>
       ),

@@ -5,6 +5,7 @@ import { add, subtract } from '../../state/scroll/scrollSlice.ts';
 import { useDispatch } from 'react-redux';
 import { Grid2 as Grid } from '@mui/material';
 import { SelectedWorksOrder } from '../../types/SelectedWorksOrder.ts';
+import { useNavigate } from 'react-router-dom';
 
 interface TileProps{
     projectInfo: SelectedWorksOrder;
@@ -12,7 +13,14 @@ interface TileProps{
 
 function SquareTile({ projectInfo }: TileProps) {
 
+    const navigate = useNavigate();
+
+    const navigateToProject = () => {
+        navigate(`/projects/${projectInfo[4]}`);
+    }
+
     const TextLayout = () => {
+        console.log(projectInfo);
         return (
             <div className='card-text'>
                 <Grid container spacing={2} >
@@ -37,7 +45,7 @@ function SquareTile({ projectInfo }: TileProps) {
 
     return (
         <motion.div onViewportEnter={() => inView()} onViewportLeave={() => outView()}>
-            <div className="card">
+            <div className="card" onClick={() => navigateToProject()}>
                 <div className="card-image">
                     <img className='square-image' src={projectInfo[2]}></img>
                 </div>

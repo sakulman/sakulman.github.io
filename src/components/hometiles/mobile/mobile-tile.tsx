@@ -33,13 +33,13 @@ const MobileTile: React.FC<{ project: Project }> = ({project}) =>   {
     }
     
     return (
-        <Grid className='home-row' container spacing={0}>
+        <Grid className='mobile-home-row' container spacing={0}>
             <Grid size={1}></Grid>
             <Grid className='image-tile' size={10}>
                 <img className='image' onClick={navigateToProject} src={project ? project.displayImage : ''} />
             </Grid>
             <Grid size={1}></Grid>
-            <Grid size={1}></Grid>
+            {/* <Grid size={1}></Grid> */}
             <Grid className='descriptor-text' size={11}>
                 <Box className='text-title'>
                     <h1 className='clickable-title' onClick={navigateToProject}>{project ? project.title : ''}</h1>

@@ -13,7 +13,7 @@
     top: 200px;
     display: flex;
     align-items: center;
-    height: 70vh; /* h-screen */
+    height: 56vh; /* h-screen */
     overflow: hidden;
     /* background-color: blueviolet; */
   }

@@ -2,18 +2,15 @@ import { Box, Grid2 as Grid } from '@mui/material';
 import * as React from 'react';
 import "./HomePage.css"
 import MediumWideImage from '../../components/hometiles/medium/medium-wide-image.tsx';
-import UltraWideImage from '../../components/hometiles/wide/ultra-wide-image.tsx';
-import SquareImage from '../../components/hometiles/square/square-image.tsx';
 import Footer from '../../components/footer/footer.tsx';
 import { useEffect, useState } from 'react';
 import MobileTile from '../../components/hometiles/mobile/mobile-tile.tsx';
 import { firestore, getProject, getProjectListInOrder, getProjectOrder, storage } from "../../firebase/firebase.tsx";
-import { collection, getDocs } from 'firebase/firestore';
-import { HomeTileType } from '../../enums/HomeTileType.ts';
-import { HomeTileForm } from '../../types/HomeTileForm.ts';
-import UserList from '../../components/test/test.js';
 import { Project } from '../../types/Project.ts';
 import HomeTile from '../../components/hometiles/hometile.tsx';
+import axios from 'axios';
+import { createNewProject, uploadImagesForProject } from '../../services/database.ts';
+import { ProjectImage } from '../../types/Image.ts';
 
 function HomePage() {
 
@@ -22,6 +19,39 @@ function HomePage() {
     const [projectObjects, setProjectObjects] = useState<Project[]>([]);
 
     const [rerender, setRerender] = useState<number>(0);
+
+    useEffect(() => {
+
+        const testBackend = async () => {
+            const jsonData = {
+                Title: "test now",
+                Date: "2025",
+                Year: 2025,
+                Format: "Wide",
+                Location: "fake location",
+                Url: "json",
+                DisplayImage: "https://firebasestorage.googleapis.com/v0/b/portfolio-8f239.firebasestorage.app/o/images%2F9eff3a45-434e-4867-864d-34556cd76462site-plan2-ps.png?alt=media&token=efbad608-d693-4761-9120-1d315c2aea60",
+                Summary: "Summary",
+                LongDescription: "Long ahh description"
+            };
+            const testProject: Project = Project.fromJson(jsonData);
+            const testuploadproject = await createNewProject(testProject);
+            // const i1 = new ProjectImage(1, 1, 1, "url");
+            // const i2 = new ProjectImage(2, 1, 2, "url");
+            const testImages: ProjectImage[] = [
+                
+                
+
+            ];
+            const testUploadImages = await uploadImagesForProject(testImages);
+            return;
+            // const testGet = await axios.get('https://portfolio-8f239-f5b9fsfwfmfkeyf6.westus2-01.azurewebsites.net/api/Projects');
+            // const testGetData = testGet.data;
+        }
+
+        testBackend();
+     
+    }, [])
 
     useEffect(() => {
         const mediaQuery = window.matchMedia('(max-width: 1000px)');

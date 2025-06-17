@@ -16,12 +16,18 @@ import { Project } from '../../types/Project.ts';
 type ProjectLabel = { key: string; label: JSX.Element; path: string };
 type ProjectYearLabel = { key: string, label: string, children: ProjectLabel[] }
 
-function NavBar() {
-    
+type NavBarProps = { isFixed: boolean };
+
+function NavBar({ isFixed }: NavBarProps) {
+
     const navigate = useNavigate();
 
     const navigateToProject = (url: string) => {
         navigate(`/projects/${url}`);
+    }
+
+    const navigateToHome = () => {
+        navigate('/');
     }
 
     const [projects, setProjects] = useState<SelectedWorksOrder[]>([]);
@@ -33,7 +39,7 @@ function NavBar() {
         }
         getData();
     }, [])
-    
+
     const more: MenuProps['items'] = [
         {
             key: 'resume',
@@ -49,11 +55,12 @@ function NavBar() {
         },
         {
             key: 'login',
-            label: (<Space><UserOutlined />Login</Space>),
-            onClick: () => { 
-                
-                navigate('/editor');
-            }
+            label: (<Space onClick={() => {
+                navigate('/editor')
+            }}>
+                <UserOutlined />Login</Space>),
+
+
         }
     ];
 
@@ -63,7 +70,7 @@ function NavBar() {
         }
     };
 
-    const getYears = (): ProjectYearLabel[]  => {
+    const getYears = (): ProjectYearLabel[] => {
         const uniqueYears: number[] = [...new Set(projects.map(proj => proj[0]))];
 
         return uniqueYears.map(year => {
@@ -77,8 +84,8 @@ function NavBar() {
 
     const getProjectsForYear = (year: number): ProjectLabel[] => {
         const projectsForThisYear: ProjectLabel[] = [];
-        for (let i = 0; i < projects.length; i++){
-            if (projects[i][0] === year){
+        for (let i = 0; i < projects.length; i++) {
+            if (projects[i][0] === year) {
                 projectsForThisYear.push({
                     key: projects[i][3],
                     label: (
@@ -94,60 +101,60 @@ function NavBar() {
         return projectsForThisYear;
     }
 
-    const selectedWorks: MenuProps['items'] = projects.length > 0 ? getYears() : 
-    [
-        {
-            key: '2024',
-            label: '2024',
-            children: [
-                {
-                    key: '2024-1',
-                    label: 'Project 1',
-                },
-                {
-                    key: '2024-2',
-                    label: 'Project 2',
-                },
-            ],
-        },
-        {
-            key: '2',
-            label: '2023',
-            children: [
-                {
-                    key: '2023-1',
-                    label: 'Project 1',
-                },
-                {
-                    key: '2-2',
-                    label: 'Project 2',
-                },
-            ],
-        },
-        {
-            key: '3',
-            label: '2022',
-            children: [
-                {
-                    key: '3-1',
-                    label: 'Project 1',
-                },
-                {
-                    key: '3-2',
-                    label: 'Project 2',
-                },
-            ],
-        },
-        {
-            type: 'divider',
-        },
-        {
-            key: '4',
-            label: 'View All',
+    const selectedWorks: MenuProps['items'] = projects.length > 0 ? getYears() :
+        [
+            {
+                key: '2024',
+                label: '2024',
+                children: [
+                    {
+                        key: '2024-1',
+                        label: 'Project 1',
+                    },
+                    {
+                        key: '2024-2',
+                        label: 'Project 2',
+                    },
+                ],
+            },
+            {
+                key: '2',
+                label: '2023',
+                children: [
+                    {
+                        key: '2023-1',
+                        label: 'Project 1',
+                    },
+                    {
+                        key: '2-2',
+                        label: 'Project 2',
+                    },
+                ],
+            },
+            {
+                key: '3',
+                label: '2022',
+                children: [
+                    {
+                        key: '3-1',
+                        label: 'Project 1',
+                    },
+                    {
+                        key: '3-2',
+                        label: 'Project 2',
+                    },
+                ],
+            },
+            {
+                type: 'divider',
+            },
+            {
+                key: '4',
+                label: 'View All',
 
-        }
+            }
 
-    ];
+        ];
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const toggleDrawer = () => {
@@ -170,7 +177,7 @@ function NavBar() {
     }, []);
     return (
 
-        <Box className='app-bar'>
+        <Box className={isFixed ? 'app-bar-fixed' : 'app-bar-sticky'}>
             <Grid container sx={{ width: '100%' }}>
                 <Grid size={{ xs: 1, md: 1, lg: 2 }}></Grid>
                 <Grid className='title-box' size={2} >
@@ -179,40 +186,36 @@ function NavBar() {
                 </Grid>
                 <Grid size={{ xs: 2, md: 1, lg: 3 }}></Grid>
                 <Grid size={{ xs: 4, md: 6, lg: 3 }} >
-                {
-                    !isMobile && (
-                        
+                    {
+                        !isMobile && (
+
                             <Box className='nav-items' sx={{ display: 'flex' }}>
-                                <p className='nav-item'>Home</p>
+                                <p className='nav-item' onClick={() => navigateToHome()}>Home</p>
                                 <Divider className='nav-divider' orientation="vertical" sx={{ height: '25%' }} />
                                 <Dropdown menu={{ items: selectedWorks }}>
-                                    <a>
+                                    
                                         <Space>
-
-                                            <Link className='nav-item' to="/selected-works">Projects<KeyboardArrowDownIcon className='down-arrow'/></Link>
-
-                                            
+                                            <Link className='nav-item' to="/selected-works">Projects<KeyboardArrowDownIcon className='down-arrow' /></Link>
                                         </Space>
-                                    </a>
+                                    {/* </a> */}
                                 </Dropdown>
                                 <Divider className='nav-divider' orientation="vertical" sx={{ height: '25%' }} />
                                 <p className='nav-item'>Contact</p>
                                 <Divider className='nav-divider' orientation="vertical" sx={{ height: '25%' }} />
                                 <Dropdown menu={{ items: more }}>
-                                    <a>
-                                        <Space>
-                                            <p className='nav-item'>More <KeyboardArrowDownIcon className='down-arrow'/> </p>
-                                            {/* <DownOutlined className='dropdown-arrow' /> */}
-                                        </Space>
-                                    </a>
+
+                                    <Space>
+                                        <Link className='nav-item' to='#'>More<KeyboardArrowDownIcon className='down-arrow' /> </Link>
+                                    </Space>
+
                                 </Dropdown>
                             </Box>
 
 
-                        
-                    )
+
+                        )
                     }
-                    </Grid>
+                </Grid>
 
                 <Grid className="hamburger-container" size={{ xs: 3, md: 1, lg: 2 }}>
                     {
